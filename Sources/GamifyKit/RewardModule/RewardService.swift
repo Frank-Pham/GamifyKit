@@ -32,8 +32,12 @@ public class RewardService: GamifyKitService {
                 
                 if data.isEmpty {
                     let newEntry = Reward(context: self.dao.manager.viewContext)
+                    let progress = Progress(context: self.dao.manager.viewContext)
                     newEntry.name = "Beginner Badge"
                     newEntry.isUnlocked = false
+                    progress.percent = 20
+                    progress.goal = 100
+                    newEntry.toProgress = progress
                     data.append(newEntry)
                 }
                 

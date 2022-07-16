@@ -8,11 +8,16 @@
 import Foundation
 import SwiftUI
 import CoreData
+import Combine
 
 public protocol GamifyKitService {
     associatedtype gamifyKitType
     
     func load(completion: @escaping ([gamifyKitType]) -> Void)
+}
+
+public protocol Publishable {
+    var publisher: PassthroughSubject<Float, Error> { get }
 }
 
 //public struct Points {

@@ -20,6 +20,10 @@ public struct RewardOverview: View {
                 
             }
             
+            ProgressBar(objectID: viewModel.reward?.toProgress?.objectID, totalProgress: 100, viewModel: viewModel.progressVM) {
+                
+            }
+            
             Button("Delete") {
                 viewModel.progressVM.delete()
             }
@@ -31,7 +35,8 @@ public struct RewardOverview: View {
                     reward.isUnlocked {
                     Text("Unlocked!")
                 } else {
-                    Text("\(viewModel.progressVM.progress!.percent, specifier: "%.2f")%")
+                    Text("\(viewModel.reward!.toProgress!.percent, specifier: "%.2f")%")
+                    Text("\(viewModel.reward?.toProgress?.goal ?? 10)%")
                 }
             }
             
@@ -40,6 +45,9 @@ public struct RewardOverview: View {
 //                    Text(reward)
 //                }
 //            }
+        }
+        .onAppear {
+            GKServiceManager.shared
         }
     }
 }

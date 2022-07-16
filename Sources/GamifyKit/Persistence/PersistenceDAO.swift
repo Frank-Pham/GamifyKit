@@ -33,6 +33,21 @@ extension PersistenceDAO {
         }
     }
     
+    public func loadId(id: NSManagedObjectID, completion: @escaping (Result<gamifyKitType, Error>) -> Void) {
+        manager.loadId(id: id) { result in
+            switch result {
+            case .success(let data):
+                guard let data = data as? gamifyKitType else {
+                    return
+                }
+                completion(.success(data))
+                
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
     public func update(completion: () -> Void) {
         manager.save()
         completion()

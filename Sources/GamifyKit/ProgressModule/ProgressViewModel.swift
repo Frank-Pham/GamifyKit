@@ -18,9 +18,9 @@ public class ProgressViewModel: GamifyKitBaseVM {
     internal let service: ProgressService
     var cancellables = Set<AnyCancellable>()
     
-    init(service: ProgressService = ProgressService()) {
+    init(service: ProgressService = GKServiceManager.shared.requestService(type: ProgressService.serviceIdentifier) as! ProgressService) {
         self.service = service
-        load()
+//        load()
     }
     
     func load() {
@@ -45,18 +45,23 @@ public class ProgressViewModel: GamifyKitBaseVM {
     
     func addProgress() {
         guard let progress = progress else { return }
-        
+
         //        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
         //            progress.percent += 20
         //            self.objectWillChange.send()
         //        }
+
         self.service.addProgress(progress: progress) {
             self.objectWillChange.send()
             self.progressPublisher.send(progress.percent)
         }
     }
     
-    
+    func loadId(id: NSManagedObjectID) {
+        service.loadId(id: id) {
+            self.progress = $0
+        }
+    }
     
     func reset() {
         guard let progress = progress else { return }

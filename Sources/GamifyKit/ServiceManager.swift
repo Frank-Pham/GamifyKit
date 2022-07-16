@@ -7,18 +7,28 @@
 
 import Foundation
 import Core
+import Combine
 
 class GKServiceManager {
     static let shared = GKServiceManager()
-    private let container = [GKService]()
+    private var container = [String:Publishable]()
     private let serviceIdentifier = GKServiceManager.self
     
-    private init() {
-        print(serviceIdentifier)
-        registerServices()
+    let pointService: PointService
+    let progressService: ProgressService
+    
+    
+    private init(pointService: PointService = PointServiceImpl(), progressService: ProgressService = ProgressService()) {
+        self.pointService = pointService
+        self.progressService = progressService
+        self.container["\(ProgressService.self)"] = progressService
     }
     
-    func registerServices() {
-        
+    func requestService(type: Publishable.Type) -> Publishable? {
+        return container["\(type)"]
+    }
+    
+    func requestPublisher(type: Publishable.Type) -> PassthroughSubject<Float, Error>? {
+        return container["\(type)"]?.publisher
     }
 }

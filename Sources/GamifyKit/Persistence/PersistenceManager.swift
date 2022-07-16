@@ -12,6 +12,7 @@ public protocol PersistenceManager: NSPersistentContainer {
     static var shared: PersistenceManager { get }
     
     func load(request: NSFetchRequest<NSManagedObject>, completion: (Result<[NSManagedObject], Error>) -> Void)
+    func loadId(id: NSManagedObjectID, completion: (Result<NSManagedObject, Error>) -> Void)
     func save()
     func delete(object: NSManagedObject)
 }
@@ -40,6 +41,17 @@ public class PersistenceManagerImpl: NSPersistentContainer, PersistenceManager {
         }
     }
     
+    public func loadId(id: NSManagedObjectID, completion: (Result<NSManagedObject, Error>) -> Void) {
+        do {
+            let object = try self.viewContext.existingObject(with: id)
+            
+            completion(.success(object))
+        } catch let error {
+            print("Error loadId: \(error)")
+            completion(.failure(error))
+        }
+    }
+    
     func setup() {
         self.loadPersistentStores { (description, error) in
             if let error = error {
@@ -51,6 +63,7 @@ public class PersistenceManagerImpl: NSPersistentContainer, PersistenceManager {
     }
     
     public func save() {
+        guard self.viewContext.hasChanges else { return }
         do {
             try self.viewContext.save()
         } catch let error {

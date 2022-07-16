@@ -8,13 +8,15 @@
 import Foundation
 import Core
 import Combine
+import CoreData
 
-class ProgressService: GamifyKitService {
-    static var serviceIdentifier: String = "ProgressService"
+class ProgressService: GamifyKitService, Publishable {
+    
+    static var serviceIdentifier = ProgressService.self
     public let dao: ProgressDAO
     let publisher = PassthroughSubject<Float, Error>()
     let unlockPublisher = PassthroughSubject<Bool, Error>()
-
+    
     
     init(dao: ProgressDAO = ProgressDAO()) {
         self.dao = dao
@@ -32,6 +34,20 @@ class ProgressService: GamifyKitService {
                     newEntry.goal = 100
                     data.append(newEntry)
                 }
+                
+                completion(data)
+            case .failure(let error):
+                print("Service Error load() \(error)")
+                fatalError(error.localizedDescription)
+            }
+        }
+    }
+    
+    func loadId(id: NSManagedObjectID, completion: @escaping (Progress) -> Void) {
+        dao.loadId(id: id) { result in
+            switch result {
+            case .success(let data):
+                print("Progress loadId() \(data)")
                 
                 completion(data)
             case .failure(let error):

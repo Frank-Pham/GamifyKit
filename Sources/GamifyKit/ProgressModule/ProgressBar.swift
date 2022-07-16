@@ -8,6 +8,7 @@
 import SwiftUI
 import Shared
 import Core
+import CoreData
 
 public struct ProgressBar<Content: View>: View {
     let content: Content
@@ -21,6 +22,7 @@ public struct ProgressBar<Content: View>: View {
     var height: CGFloat = 10
     var cornerRadius: CGFloat = 20
     var totalProgress: CGFloat
+    var objectID: NSManagedObjectID?
     
     public init(totalProgress: CGFloat, viewModel: ProgressViewModel, @ViewBuilder content: () -> Content) {
         self.totalProgress = totalProgress
@@ -28,6 +30,12 @@ public struct ProgressBar<Content: View>: View {
         self.content = content()
     }
     
+    public init(objectID: NSManagedObjectID?, totalProgress: CGFloat, viewModel: ProgressViewModel, @ViewBuilder content: () -> Content) {
+        self.objectID = objectID
+        self.totalProgress = totalProgress
+        self.viewModel = viewModel
+        self.content = content()
+    }
     public var body: some View {
         let percentDecimal = totalProgress / totalProgress
         
@@ -42,7 +50,7 @@ public struct ProgressBar<Content: View>: View {
                         RoundedRectangle(cornerRadius: cornerRadius)
                         //                        .trim(from: 0, to: min(progress + 1, 1))
                             .fill(LinearGradient([.gamifyPrimary, .gamifySecondary]))
-                            .frame(width: CGFloat(progress.percent) * percentDecimal, height: height)
+                            .frame(width: CGFloat(viewModel.progress!.percent) * percentDecimal, height: height)
                             .animation(.spring(), value: progress.percent)
                     }
                     
@@ -73,6 +81,13 @@ public struct ProgressBar<Content: View>: View {
                     Text("Reset")
                 }
             }
+        }
+        .onAppear {
+            guard let id = objectID else {
+                viewModel.load()
+                return
+            }
+            viewModel.loadId(id: id)
         }
     }
 }

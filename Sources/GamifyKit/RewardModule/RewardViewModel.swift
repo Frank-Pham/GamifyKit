@@ -80,21 +80,34 @@ class RewardViewModel: GamifyKitBaseVM {
                 self.objectWillChange.send()
             }
         }.store(in: &cancellables)
+        
+        guard let pub = GKServiceManager.shared.requestPublisher(type: ProgressService.serviceIdentifier) else {
+            print("Publisher Empty")
 
-        progressVM.service.publisher.sink { result in
-            switch result {
-            case .finished:
-                break
-            case .failure(let error):
-                print("Error: \(error.localizedDescription)")
-                break
-            }
-        } receiveValue: { [weak self] receivedValue in
-            self?.rewardProgression = receivedValue
-            self?.objectWillChange.send()
+            return
+        }
+        
+        pub.sink { print($0) } receiveValue: { result in
+            self.rewardProgression = result
+            self.objectWillChange.send()
+            
+            print("New publish Manager: \(result)")
+        }.store(in: &cancellables)
 
-            print("New publish: \(receivedValue)")
-        } .store(in: &cancellables)
+//        progressVM.service.publisher.sink { result in
+//            switch result {
+//            case .finished:
+//                break
+//            case .failure(let error):
+//                print("Error: \(error.localizedDescription)")
+//                break
+//            }
+//        } receiveValue: { [weak self] receivedValue in
+//            self?.rewardProgression = receivedValue
+//            self?.objectWillChange.send()
+//
+//            print("New publish: \(receivedValue)")
+//        } .store(in: &cancellables)
         
         
         
