@@ -16,9 +16,9 @@ public struct RewardOverview: View {
     
     public var body: some View {
         VStack {
-            ProgressBar(totalProgress: 100, viewModel: viewModel.progressVM) {
-                
-            }
+//            ProgressBar(totalProgress: 100, viewModel: viewModel.progressVM) {
+//                
+//            }
             
             ProgressBar(objectID: viewModel.reward?.toProgress?.objectID, totalProgress: 100, viewModel: viewModel.progressVM) {
                 
@@ -48,6 +48,7 @@ public struct RewardOverview: View {
         }
         .onAppear {
             GKServiceManager.shared
+            viewModel.load()
         }
     }
 }

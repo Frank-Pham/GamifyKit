@@ -8,6 +8,7 @@
 import Foundation
 import Core
 import Combine
+import CoreData
 
 public class RewardService: GamifyKitService {
     public typealias gamifyKitType = Reward
@@ -40,6 +41,20 @@ public class RewardService: GamifyKitService {
                     newEntry.toProgress = progress
                     data.append(newEntry)
                 }
+                
+                completion(data)
+            case .failure(let error):
+                print("Service Error load() \(error)")
+                fatalError(error.localizedDescription)
+            }
+        }
+    }
+    
+    func loadId(id: NSManagedObjectID, completion: @escaping (Reward) -> Void) {
+        dao.loadId(id: id) { result in
+            switch result {
+            case .success(let data):
+                print("Progress loadId() \(data)")
                 
                 completion(data)
             case .failure(let error):

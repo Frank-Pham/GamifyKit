@@ -8,6 +8,7 @@
 import Foundation
 import Core
 import Combine
+import CoreData
 
 class RewardViewModel: GamifyKitBaseVM {
     let service: RewardService
@@ -22,7 +23,7 @@ class RewardViewModel: GamifyKitBaseVM {
     init(progressVM: ProgressViewModel = ProgressViewModel()) {
         self.service = RewardService(service: progressVM.service)
         self.progressVM = progressVM
-        load()
+//        load()
         //        registerSubscriber()
         registerProgressSubscriber()
         //        registerProgress()
@@ -31,6 +32,12 @@ class RewardViewModel: GamifyKitBaseVM {
     func load() {
         service.load {
             self.reward = $0.first
+        }
+    }
+    
+    func loadId(id: NSManagedObjectID) {
+        service.loadId(id: id) {
+            self.reward = $0
         }
     }
     
